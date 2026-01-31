@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="45" fill="url(#grad1)" stroke="#1e40af" stroke-width="2"/>
+  
+  <!-- Store icon -->
+  <rect x="25" y="35" width="50" height="30" fill="white" rx="3"/>
+  <rect x="20" y="30" width="60" height="8" fill="white" rx="4"/>
+  <rect x="15" y="25" width="70" height="8" fill="white" rx="4"/>
+  
+  <!-- Star rating -->
+  <g fill="#fbbf24">
+    <polygon points="35,70 37,76 43,76 38,80 40,86 35,82 30,86 32,80 27,76 33,76" />
+    <polygon points="50,70 52,76 58,76 53,80 55,86 50,82 45,86 47,80 42,76 48,76" />
+    <polygon points="65,70 67,76 73,76 68,80 70,86 65,82 60,86 62,80 57,76 63,76" />
+  </g>
+</svg>
