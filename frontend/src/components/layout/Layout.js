@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Menu, 
-  X, 
-  Store, 
-  Users, 
-  BarChart3, 
-  Settings, 
+import {
+  Menu,
+  X,
+  Store,
+  Users,
+  BarChart3,
+  Settings,
   LogOut,
   Star
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import Chatbot from '../ui/Chatbot';
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout, isAdmin, isNormalUser, isStoreOwner } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
-  
+
   // Navigation items based on user role
   const getNavigationItems = () => {
     if (isAdmin()) {
@@ -32,29 +33,29 @@ const Layout = ({ children }) => {
         { name: 'Stores', href: '/admin/stores', icon: Store },
       ];
     }
-    
+
     if (isNormalUser()) {
       return [
         { name: 'Stores', href: '/stores', icon: Store },
         { name: 'My Ratings', href: '/my-ratings', icon: Star },
       ];
     }
-    
+
     if (isStoreOwner()) {
       return [
         { name: 'Dashboard', href: '/my-store', icon: BarChart3 },
       ];
     }
-    
+
     return [];
   };
-  
+
   const navigation = getNavigationItems();
-  
+
   const isActivePath = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Top Navbar */}
@@ -69,18 +70,17 @@ const Layout = ({ children }) => {
                   Rately
                 </span>
               </Link>
-              
+
               {/* Navigation Links (Desktop) */}
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`${
-                      isActivePath(item.href)
-                        ? 'border-primary-500 text-white'
-                        : 'border-transparent text-gray-400 hover:border-gray-500 hover:text-gray-200'
-                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                    className={`${isActivePath(item.href)
+                      ? 'border-primary-500 text-white'
+                      : 'border-transparent text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                      } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.name}
@@ -99,13 +99,13 @@ const Layout = ({ children }) => {
               >
                 <Settings className="w-5 h-5" />
               </Link>
-              
+
               {/* User Avatar (Desktop) */}
               <div className="hidden sm:flex items-center relative group">
                 <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold cursor-pointer">
                   {user?.name?.charAt(0) || 'U'}
                 </div>
-                
+
                 {/* Hover Dropdown */}
                 <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 ring-1 ring-gray-700 ring-opacity-5">
                   <div className="px-4 py-2 text-sm text-white border-b border-gray-700 font-medium truncate">
@@ -147,11 +147,10 @@ const Layout = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`${
-                    isActivePath(item.href)
-                      ? 'bg-primary-900/50 border-primary-500 text-primary-300'
-                      : 'border-transparent text-gray-400 hover:bg-gray-700 hover:border-gray-600 hover:text-gray-200'
-                  } block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center`}
+                  className={`${isActivePath(item.href)
+                    ? 'bg-primary-900/50 border-primary-500 text-primary-300'
+                    : 'border-transparent text-gray-400 hover:bg-gray-700 hover:border-gray-600 hover:text-gray-200'
+                    } block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <item.icon className="w-5 h-5 mr-3" />
@@ -160,11 +159,10 @@ const Layout = ({ children }) => {
               ))}
               <Link
                 to="/settings"
-                className={`${
-                  isActivePath('/settings')
-                    ? 'bg-primary-900/50 border-primary-500 text-primary-300'
-                    : 'border-transparent text-gray-400 hover:bg-gray-700 hover:border-gray-600 hover:text-gray-200'
-                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center`}
+                className={`${isActivePath('/settings')
+                  ? 'bg-primary-900/50 border-primary-500 text-primary-300'
+                  : 'border-transparent text-gray-400 hover:bg-gray-700 hover:border-gray-600 hover:text-gray-200'
+                  } block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <Settings className="w-5 h-5 mr-3" />
@@ -205,6 +203,9 @@ const Layout = ({ children }) => {
           {children}
         </div>
       </main>
+
+      {/* AI Chatbot */}
+      <Chatbot />
     </div>
   );
 };

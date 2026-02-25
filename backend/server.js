@@ -9,6 +9,7 @@ const initializeDatabase = require('./config/initDb');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const storeRoutes = require('./routes/stores');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -48,8 +49,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
@@ -69,6 +70,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stores', storeRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -78,10 +80,10 @@ app.use('*', (req, res) => {
 // Global error handler
 app.use((error, req, res, next) => {
   console.error('Global error handler:', error);
-  
+
   // Don't leak error details in production
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   res.status(error.status || 500).json({
     error: error.message || 'Internal server error',
     ...(isDevelopment && { stack: error.stack })
@@ -93,7 +95,7 @@ async function startServer() {
   try {
     console.log('Initializing database...');
     await initializeDatabase();
-    
+
     app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
