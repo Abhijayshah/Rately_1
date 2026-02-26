@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Store, Star, Shield, TrendingUp, ArrowRight } from 'lucide-react';
+import { Store, Star, Shield, TrendingUp, ArrowRight, MessageCircle, X, Send, Phone, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { chatAPI } from '../services/api';
 
 const Landing = () => {
   const { isAuthenticated } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const whatsappNumber = '917879028316';
+  const suggestions = [
+    'How do I rate a store?',
+    'How to create store owner?',
+    'Where is my dashboard?'
+  ];
+  const [showWhatsOptions, setShowWhatsOptions] = useState(false);
+  const [includeLastAnswer, setIncludeLastAnswer] = useState(true);
+  const [includeUserInfo, setIncludeUserInfo] = useState(true);
 
   // Array of images from public folder
   const backgroundImages = [
@@ -26,6 +40,54 @@ const Landing = () => {
 
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
+
+  const sendChat = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = { role: 'user', content: chatInput.trim() };
+    setChatMessages((m) => [...m, userMsg]);
+    setChatInput('');
+    setChatLoading(true);
+    try {
+      const payload = { message: userMsg.content };
+      const resp = isAuthenticated
+        ? await chatAPI.sendMessage(payload)
+        : await chatAPI.sendMessagePublic(payload);
+      const aiContent = resp.data?.message || resp.data?.aiMessage || '';
+      if (aiContent) {
+        setChatMessages((m) => [...m, { role: 'assistant', content: aiContent }]);
+      } else {
+        setChatMessages((m) => [...m, { role: 'assistant', content: 'No response.' }]);
+      }
+    } catch (e) {
+      setChatMessages((m) => [...m, { role: 'assistant', content: 'Error retrieving answer.' }]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+  
+  const sendWhatsApp = () => {
+    const raw = chatInput && chatInput.trim().length ? chatInput.trim() : 'Hello Abhijay, I need help with Rately.';
+    const prefix = 'Rately question: ';
+    const parts = [];
+    const userLabel = includeUserInfo && typeof window !== 'undefined' 
+      ? (isAuthenticated && JSON.parse(localStorage.getItem('user') || '{}')?.email) || 'Guest'
+      : null;
+    const page = typeof window !== 'undefined' ? window.location.pathname : '/';
+    const ts = new Date().toLocaleString();
+    parts.push(prefix + raw);
+    if (includeUserInfo && userLabel) parts.push(`From: ${userLabel}`);
+    parts.push(`Page: ${page}`);
+    parts.push(`Time: ${ts}`);
+    if (includeLastAnswer) {
+      const lastAssistant = [...chatMessages].reverse().find(m => m.role === 'assistant');
+      if (lastAssistant?.content) {
+        parts.push(`Last answer: ${lastAssistant.content}`);
+      }
+    }
+    const text = encodeURIComponent(parts.join(' | '));
+    const url = `https://wa.me/${whatsappNumber}?text=${text}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans overflow-x-hidden">
@@ -178,11 +240,176 @@ const Landing = () => {
               <span className="text-xl font-bold text-gray-300">Rately</span>
             </div>
             <div className="text-gray-500 text-sm">
-              © 2024 Rately Platform. All rights reserved.
+              © 2024 Rately Platform. All rights reserved. Built by Abhijay Shah.
             </div>
           </div>
         </div>
       </footer>
+      
+      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 text-xs text-gray-300 bg-gray-900/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-700 flex items-center space-x-3">
+        <span>Built by Abhijay Shah — For more follow:</span>
+        <a
+          href="https://catcatchcode.online"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-yellow-400 hover:text-yellow-300 underline"
+        >
+          catcatchcode.online
+        </a>
+        <a
+          href="https://catcatchcode.online"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-1.5 py-[2px] rounded-full bg-yellow-400 text-gray-900 font-semibold hover:brightness-95 text-xs leading-none"
+          aria-label="Visit Website"
+          title="Visit Website"
+        >
+          a
+        </a>
+      </div>
+
+      <button
+        onClick={() => setChatOpen(true)}
+        className={`fixed bottom-6 right-6 px-4 py-3 rounded-full bg-yellow-400 text-gray-900 font-semibold shadow-lg hover:shadow-yellow-500/40 transition ${
+          chatOpen ? 'hidden' : ''
+        }`}
+      >
+        <span className="flex items-center">
+          <MessageCircle className="w-5 h-5 mr-2" />
+          Ask Rately
+        </span>
+      </button>
+
+      {chatOpen && (
+        <div className="fixed bottom-6 right-6 w-96 max-w-[95vw] bg-gray-800/90 backdrop-blur-md border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-900 to-gray-800">
+            <div className="flex items-center space-x-2">
+              <MessageCircle className="w-5 h-5 text-yellow-400" />
+              <span className="font-semibold">Rately Assistant</span>
+            </div>
+            <div className="flex items-center space-x-2 text-[10px] text-gray-300 mr-2">
+              <span>Built by Abhijay Shah — follow:</span>
+              <a
+                href="https://catcatchcode.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-yellow-400 hover:text-yellow-300 underline"
+              >
+                catcatchcode.online
+              </a>
+              <a
+                href="https://catcatchcode.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-1.5 py-[2px] rounded-full bg-yellow-400 text-gray-900 font-semibold hover:brightness-95 text-[10px] leading-none"
+                aria-label="Website"
+                title="Website"
+              >
+                a
+              </a>
+            </div>
+            <button
+              onClick={() => setChatOpen(false)}
+              className="p-2 rounded hover:bg-gray-700"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="h-64 overflow-y-auto p-3 space-y-3">
+            {chatMessages.length === 0 && (
+              <div className="text-sm text-gray-400">
+                Ask questions about using Rately, rating stores, or managing accounts.
+              </div>
+            )}
+            {chatMessages.map((m, idx) => (
+              <div
+                key={idx}
+                className={`max-w-[85%] px-3 py-2 rounded-lg ${
+                  m.role === 'user'
+                    ? 'bg-yellow-400 text-gray-900 ml-auto'
+                    : 'bg-gray-700 text-white'
+                }`}
+              >
+                {m.content}
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="text-sm text-gray-400">Thinking...</div>
+            )}
+          </div>
+          <div className="px-3 pb-2 flex flex-wrap gap-2">
+            {suggestions.map((s) => (
+              <button
+                key={s}
+                onClick={() => setChatInput(s)}
+                className="px-3 py-1 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-xs"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <div className="p-3 border-t border-gray-700 flex items-center space-x-2">
+            <input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') sendChat();
+              }}
+              placeholder="Type your question..."
+              className="flex-1 px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder:text-gray-500"
+            />
+            <button
+              onClick={sendChat}
+              disabled={chatLoading || !chatInput.trim()}
+              aria-label="Send message"
+              title="Send message"
+              className="px-4 py-2 rounded-full bg-yellow-400 text-gray-900 font-semibold disabled:opacity-60 hover:brightness-95 flex items-center space-x-2"
+            >
+              <Send className="w-4 h-4" />
+              <span>Send</span>
+            </button>
+            <button
+              onClick={sendWhatsApp}
+              aria-label="Send to WhatsApp"
+              title="Send to WhatsApp"
+              className="px-3 py-2 rounded-full bg-green-500 text-white font-semibold hover:brightness-95 flex items-center space-x-2"
+            >
+              <Phone className="w-4 h-4" />
+              <span>WhatsApp</span>
+            </button>
+            <button
+              onClick={() => setShowWhatsOptions(v => !v)}
+              aria-label="Customize WhatsApp message"
+              title="Customize WhatsApp message"
+              className="p-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+          </div>
+          {showWhatsOptions && (
+            <div className="px-3 pb-3 flex items-center justify-between text-xs text-gray-300">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={includeLastAnswer}
+                  onChange={(e) => setIncludeLastAnswer(e.target.checked)}
+                  className="rounded border-gray-600"
+                />
+                <span>Include last assistant answer</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={includeUserInfo}
+                  onChange={(e) => setIncludeUserInfo(e.target.checked)}
+                  className="rounded border-gray-600"
+                />
+                <span>Include my email</span>
+              </label>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Custom Styles for Animations */}
       <style>{`

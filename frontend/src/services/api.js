@@ -96,6 +96,12 @@ export const storeAPI = {
   getOwnerDashboard: (params) => api.get('/stores/owner/dashboard', { params }),
 };
 
+// Chat API
+export const chatAPI = {
+  sendMessage: (payload) => api.post('/chat/message', payload),
+  sendMessagePublic: (payload) => api.post('/chat/message/public', payload),
+};
+
 // Utility functions
 export const handleApiError = (error) => {
   if (error.response) {

@@ -3,7 +3,7 @@ const router = express.Router();
 const { sendMessage } = require('../controllers/chatController');
 const { authenticateToken } = require('../middleware/auth');
 
-// All chat routes require authentication
 router.post('/message', authenticateToken, sendMessage);
+router.post('/message/public', sendMessage);
 
 module.exports = router;

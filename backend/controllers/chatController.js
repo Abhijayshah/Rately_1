@@ -22,7 +22,8 @@ Your role:
 - Be friendly, concise, and helpful
 - If asked about technical issues, suggest contacting support
 
-Keep responses brief and conversational.`;
+Keep responses brief and conversational.
+Only answer questions strictly related to the Rately website and its features. If a question is unrelated to Rately (e.g., general knowledge, news, weather, coding unrelated to Rately), politely refuse and suggest asking about Rately features.`;
 
 /**
  * @desc    Send message to chatbot and get AI response via OpenRouter
@@ -37,6 +38,33 @@ const sendMessage = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: 'Message is required'
+            });
+        }
+
+        const text = message.toLowerCase();
+        const keywords = [
+            'rately',
+            'store',
+            'rating',
+            'review',
+            'dashboard',
+            'admin',
+            'user',
+            'login',
+            'register',
+            'profile',
+            'password',
+            'store owner',
+            'owner',
+            'analytics',
+            'settings'
+        ];
+        const isRelevant = keywords.some(k => text.includes(k));
+        if (!isRelevant) {
+            return res.json({
+                success: true,
+                message: 'I can help only with Rately-related questions such as rating stores, managing accounts, dashboards, and admin features.',
+                timestamp: new Date().toISOString()
             });
         }
 
