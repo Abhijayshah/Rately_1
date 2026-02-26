@@ -246,27 +246,6 @@ const Landing = () => {
         </div>
       </footer>
       
-      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 text-xs text-gray-300 bg-gray-900/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-700 flex items-center space-x-3">
-        <span>Built by Abhijay Shah — For more follow:</span>
-        <a
-          href="https://catcatchcode.online"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-yellow-400 hover:text-yellow-300 underline"
-        >
-          catcatchcode.online
-        </a>
-        <a
-          href="https://catcatchcode.online"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-1.5 py-[2px] rounded-full bg-yellow-400 text-gray-900 font-semibold hover:brightness-95 text-xs leading-none"
-          aria-label="Visit Website"
-          title="Visit Website"
-        >
-          a
-        </a>
-      </div>
 
       <button
         onClick={() => setChatOpen(true)}
