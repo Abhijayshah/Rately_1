@@ -7,7 +7,7 @@ const getBaseUrl = () => {
   } else if (process.env.NODE_ENV === 'production') {
     url = 'https://rately-aq95.onrender.com/api';
   } else {
-    url = 'http://localhost:5001/api';
+    url = 'http://localhost:5002/api';
   }
 
   // Ensure URL ends with /api
