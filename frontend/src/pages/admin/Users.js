@@ -523,6 +523,9 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess }) => {
     password: '',
     address: '',
     role: 'normal_user',
+    storeName: '',
+    storeEmail: '',
+    storeAddress: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -547,6 +550,9 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess }) => {
         password: '',
         address: '',
         role: 'normal_user',
+        storeName: '',
+        storeEmail: '',
+        storeAddress: '',
       });
       onSuccess();
     } catch (error) {
@@ -634,6 +640,41 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess }) => {
           required
           error={errors.role}
         />
+        
+        {formData.role === 'store_owner' && (
+          <>
+            <div className="p-3 bg-gray-700/30 border border-gray-700 rounded-lg">
+              <p className="text-sm text-gray-300">
+                Optional: Provide store details to auto-create the store for this owner.
+              </p>
+            </div>
+            <Input
+              label="Store Name"
+              name="storeName"
+              value={formData.storeName}
+              onChange={handleChange}
+              placeholder="Enter store name (3-60 characters)"
+              error={errors.storeName}
+            />
+            <Input
+              label="Store Email"
+              name="storeEmail"
+              type="email"
+              value={formData.storeEmail}
+              onChange={handleChange}
+              placeholder="Enter store email"
+              error={errors.storeEmail}
+            />
+            <Input
+              label="Store Address"
+              name="storeAddress"
+              value={formData.storeAddress}
+              onChange={handleChange}
+              placeholder="Enter store address (max 400 characters)"
+              error={errors.storeAddress}
+            />
+          </>
+        )}
         
         <div className="flex justify-end space-x-3">
           <Button

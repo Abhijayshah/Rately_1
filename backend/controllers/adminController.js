@@ -46,6 +46,33 @@ const createUser = async (req, res) => {
       role
     });
 
+    // If the new user is a store owner, optionally create their store too
+    if (role === 'store_owner') {
+      const { storeName, storeEmail, storeAddress } = req.body;
+      // Derive sensible defaults if not provided
+      const derivedStoreName = storeName && storeName.trim().length ? storeName.trim() : `${name}'s Store`;
+      const derivedStoreEmail = storeEmail && storeEmail.trim().length 
+        ? storeEmail.trim().toLowerCase() 
+        : `${name}`.toLowerCase().replace(/\s+/g, '') + '.store@rately.local';
+      const derivedStoreAddress = storeAddress && storeAddress.trim().length ? storeAddress.trim() : address;
+
+      // Only create store if one doesn't already exist for this owner
+      const existingOwnerStore = await Store.findOne({ owner: user._id });
+      if (!existingOwnerStore) {
+        try {
+          await Store.create({
+            name: derivedStoreName,
+            email: derivedStoreEmail,
+            address: derivedStoreAddress,
+            owner: user._id
+          });
+        } catch (storeError) {
+          // If store creation fails (e.g., validation/duplicate email), proceed but inform client
+          console.error('Auto-create store error:', storeError);
+        }
+      }
+    }
+
     res.status(201).json({
       message: 'User created successfully',
       user: {

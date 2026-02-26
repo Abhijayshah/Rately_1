@@ -15,8 +15,8 @@ const handleValidationErrors = (req, res, next) => {
 // User validation rules
 const validateUserRegistration = [
   body('name')
-    .isLength({ min: 20, max: 60 })
-    .withMessage('Name must be between 20 and 60 characters'),
+    .isLength({ min: 3, max: 60 })
+    .withMessage('Name must be between 3 and 60 characters'),
   body('email')
     .isEmail()
     .normalizeEmail()
@@ -62,8 +62,8 @@ const validatePasswordUpdate = [
 // Store validation rules
 const validateStore = [
   body('name')
-    .isLength({ min: 20, max: 60 })
-    .withMessage('Store name must be between 20 and 60 characters'),
+    .isLength({ min: 3, max: 60 })
+    .withMessage('Store name must be between 3 and 60 characters'),
   body('email')
     .isEmail()
     .normalizeEmail()
@@ -90,8 +90,8 @@ const validateRating = [
 // Admin user creation validation
 const validateAdminUserCreation = [
   body('name')
-    .isLength({ min: 20, max: 60 })
-    .withMessage('Name must be between 20 and 60 characters'),
+    .isLength({ min: 3, max: 60 })
+    .withMessage('Name must be between 3 and 60 characters'),
   body('email')
     .isEmail()
     .normalizeEmail()

@@ -442,7 +442,7 @@ const CreateStoreModal = ({ isOpen, onClose, onSuccess, users }) => {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Enter store name (20-60 characters)"
+          placeholder="Enter store name (3-60 characters)"
           required
           error={errors.name}
         />
