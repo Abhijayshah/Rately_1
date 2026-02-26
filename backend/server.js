@@ -21,14 +21,28 @@ connectDB();
 app.set('trust proxy', 1);
 
 // CORS configuration - Place before other middleware
-const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+const rawOrigins = process.env.CORS_ORIGINS || process.env.CLIENT_URL || 'http://localhost:3000';
+const allowList = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowList.includes(origin)) return true;
+  try {
+    const url = new URL(origin);
+    const host = url.hostname;
+    if (host.endsWith('vercel.app') || host.endsWith('onrender.com')) return true;
+  } catch (e) {}
+  return false;
+};
+app.use(cors({
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-};
-app.use(cors(corsOptions));
+}));
 
 // Security middleware
 app.use(helmet());
