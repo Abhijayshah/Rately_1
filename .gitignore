@@ -9,6 +9,7 @@ coverage/
 *.md
 
 !README.md 
+!details-for-development.md
 
 
 # Production
