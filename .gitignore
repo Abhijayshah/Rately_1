@@ -6,7 +6,7 @@ node_modules/
 # Testing
 coverage/
 
-*.md
+project_prompt.md
 
 !README.md 
 !details-for-development.md
